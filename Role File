@@ -43,5 +43,23 @@
 
 
 
+OR 
+
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Effect": "Allow",
+			"Action": [
+				"iam:*",
+				"secretsmanager:*"
+			],
+			"Resource": "*"
+		}
+	]
+}
+
+
+
 # ALL Secret Permission ALso
 #Secret Manager Read Write Full

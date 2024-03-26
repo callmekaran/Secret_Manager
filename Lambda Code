@@ -1,0 +1,83 @@
+In Secret Manager You Have To Provide
+
+username
+accessKey
+secretKey
+
+
+
+const AWS = require('aws-sdk');
+const secretsManager = new AWS.SecretsManager();
+
+exports.handler = async (event) => {
+    try {
+        // Retrieve all secrets from Secrets Manager
+        const listSecretsResponse = await secretsManager.listSecrets({}).promise();
+        const secretIds = listSecretsResponse.SecretList.map(secret => secret.Name);
+
+        // Iterate through secrets to find the one you need
+        for (const secretId of secretIds) {
+            const secretsManagerData = await secretsManager.getSecretValue({ SecretId: secretId }).promise();
+            const { username, accessKey } = JSON.parse(secretsManagerData.SecretString);
+
+            // Update IAM keys
+            const newKeys = await updateIamKeys(username, accessKey);
+
+            // Print the new keys
+            console.log("New Access Key:", newKeys.accessKeyId);
+            console.log("New Secret Key:", newKeys.secretAccessKey);
+
+            // Update secret in Secrets Manager with new keys
+            const secretValue = {
+                accessKey: newKeys?.accessKeyId,
+                secretKey: newKeys?.secretAccessKey,
+                username: username
+            };
+
+            const updateParams = {
+                SecretId: secretId,
+                SecretString: JSON.stringify(secretValue)
+            };
+            await secretsManager.updateSecret(updateParams).promise();
+        }
+
+        return {
+            statusCode: 200,
+            body: JSON.stringify({ message: 'Secrets updated successfully.' })
+        };
+    } catch (error) {
+        console.error('Error:', error);
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: error.message })
+        };
+    }
+};
+
+async function updateIamKeys(userName, oldAccessKeyId) {
+    try {
+        // Initialize the IAM service object
+        const iam = new AWS.IAM();
+
+        // Deactivate old access key
+        await iam.updateAccessKey({ UserName: userName, AccessKeyId: oldAccessKeyId, Status: 'Inactive' }).promise();
+
+        // Delete the inactive key
+        await iam.deleteAccessKey({ AccessKeyId: oldAccessKeyId, UserName: userName }).promise();
+
+        // Create a new access key for the IAM user
+        const createNewKeyResponse = await iam.createAccessKey({ UserName: userName }).promise();
+
+        // Get the new access key ID and secret access key
+        const accessKeyId = createNewKeyResponse.AccessKey.AccessKeyId;
+        const secretAccessKey = createNewKeyResponse.AccessKey.SecretAccessKey;
+
+        return {
+            accessKeyId,
+            secretAccessKey
+        };
+    } catch (err) {
+        console.error('Error in IAM user creation:', err.message);
+        throw err;
+    }
+}

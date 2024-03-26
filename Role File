@@ -59,7 +59,34 @@ OR
 	]
 }
 
+OR 
 
+
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Effect": "Allow",
+			"Action": [
+				"iam:ListAccessKeys",
+				"iam:GetAccessKeyLastUsed",
+				"iam:CreateAccessKey",
+				"iam:DeleteAccessKey",
+				"iam:UpdateAccessKey",
+				"secretsmanager:GetRandomPassword",
+				"secretsmanager:GetSecretValue",
+				"secretsmanager:PutSecretValue",
+				"secretsmanager:RotateSecret",
+				"secretsmanager:RestoreSecret",
+				"secretsmanager:UpdateSecret",
+				"secretsmanager:CreateSecret",
+				"secretsmanager:DeleteSecret",
+				"secretsmanager:ListSecrets"
+			],
+			"Resource": "*"
+		}
+	]
+}
 
 # ALL Secret Permission ALso
 #Secret Manager Read Write Full

@@ -1,0 +1,47 @@
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Effect": "Allow",
+			"Action": [
+				"secretsmanager:DescribeSecret",
+				"secretsmanager:GetSecretValue",
+				"secretsmanager:PutSecretValue",
+				"secretsmanager:UpdateSecret",
+				"secretsmanager:UpdateSecretVersionStage",
+				"secretsmanager:ListSecrets",
+				"secretsmanager:*"
+			],
+			"Resource": "arn:aws:iam::058264385073:role/service-role/T2-role-ma9art2r"
+		},
+		{
+			"Effect": "Allow",
+			"Action": [
+				"secretsmanager:GetRandomPassword",
+				"secretsmanager:UpdateSecret",
+				"secretsmanager:GetSecretValue",
+				"iam:CreateAccesskey",
+				"iam:DeleteAccesskey",
+				"iam:UpdateAccesskey",
+				"iam:*"
+			],
+			"Resource": "*"
+		},
+		{
+			"Action": [
+				"ec2:CreateNetworkInterface",
+				"ec2:DeleteNetworkInterface",
+				"ec2:DescribeNetworkInterfaces",
+				"ec2:DetachNetworkInterface"
+			],
+			"Resource": "*",
+			"Effect": "Allow"
+		}
+	]
+}
+
+
+
+
+# ALL Secret Permission ALso
+#Secret Manager Read Write Full
